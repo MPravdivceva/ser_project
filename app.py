@@ -3,14 +3,15 @@ from flask import Flask, render_template, request, redirect, flash
 import os
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
+
+# Load environment variables
 load_dotenv()
-
-import os
-connection_string = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
-
 
 # Fetch the Azure Blob Storage connection string from environment variables
 connection_string = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+
+if not connection_string:
+    raise ValueError("Azure Storage Connection String not found. Ensure it is set in the .env file.")
 
 # Initialize BlobServiceClient
 blob_service_client = BlobServiceClient.from_connection_string(connection_string)
@@ -19,9 +20,16 @@ blob_service_client = BlobServiceClient.from_connection_string(connection_string
 container_name = "uploads"
 container_client = blob_service_client.get_container_client(container_name)
 
-
+# Flask application setup
 app = Flask(__name__)
 app.secret_key = "your-secret-key"  # Replace with a secure key
+
+# Allowed file extensions
+ALLOWED_EXTENSIONS = {'wav', 'mp3', 'm4a'}
+
+# Helper function to check file extension
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Home page
 @app.route('/')
@@ -29,14 +37,6 @@ def index():
     return render_template('index.html')
 
 # Upload page
-# Define allowed file extensions
-ALLOWED_EXTENSIONS = {'wav', 'mp3', 'm4a'}
-
-
-# Helper function to check file extension
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
@@ -93,8 +93,7 @@ def ml_model():
 def record():
     return render_template('record.html')
 
-
 # Run the Flask app
-if __name__ == '__main__':
-    app.run(debug=True)
-
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))  # Default to 8000 if PORT is not set
+    app.run(host="0.0.0.0", port=port, debug=True)
