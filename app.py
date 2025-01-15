@@ -98,4 +98,3 @@ def record():
 if __name__ == '__main__':
     app.run(debug=True)
 
-#DefaultEndpointsProtocol=https;AccountName=serprojectstorage;AccountKey=2FzaCJEEuh1TVYms4ua33ZXmiBKfsGXviOBZtnBQB4zGH8WU2MoyuQ5NKypDK9IYcDT9LNtXheWW+AStaquDnQ==;EndpointSuffix=core.windows.net
