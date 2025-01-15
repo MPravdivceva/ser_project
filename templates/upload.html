@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload - SER Project{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <h2>Upload Your Audio File</h2>
+    <p>Please upload a WAV, MP3, or M4A file for emotion recognition.</p>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- File Upload Form -->
+    <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" class="file-input">
+        <button type="submit" class="button">Upload</button>
+    </form>
+</div>
+{% endblock %}

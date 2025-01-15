@@ -1,0 +1,256 @@
+/* General Styles */
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #ffffff;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* General Header Styling */
+header {
+    background-color: #f5f5f5;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    border-bottom: 2px solid #e0e0e0; /* Straight line across the bottom */
+}
+
+header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    color: #000;
+    margin: 0;
+}
+
+/* Navigation Menu */
+.nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #000;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.nav-links a:hover {
+    color: #007bff;
+}
+
+/* Hamburger Menu for Mobile */
+.menu-toggle {
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+}
+
+.menu-toggle .bar {
+    width: 25px;
+    height: 3px;
+    background-color: #000;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: flex; /* Show the hamburger menu */
+    }
+
+    .nav-links {
+        display: none; /* Hide menu links by default on mobile */
+        flex-direction: column;
+        gap: 10px;
+        background-color: #f5f5f5;
+        padding: 10px;
+        position: absolute;
+        top: 60px; /* Adjust based on header height */
+        left: 0;
+        right: 0;
+        border-top: 1px solid #ddd;
+    }
+
+    .nav-links a {
+        text-align: center;
+        padding: 10px;
+    }
+
+    .nav-links.active {
+        display: flex; /* Show the menu when active */
+    }
+}
+
+
+
+footer {
+    text-align: center;
+    background-color: #f5f5f5;
+    padding: 10px 0;
+    border-top: 2px solid #e0e0e0;
+    color: #777;
+    font-size: 0.9rem;
+}
+
+/* Home Page */
+.home-container {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.home-container h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.home-container p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
+.home-container .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap; /* Adjust buttons for smaller screens */
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    color: #fff;
+    background-color: #007bff;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    transition: 0.3s ease;
+}
+
+.button:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    color: #fff;
+}
+
+/* Upload Page */
+.upload-container {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.upload-container h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.upload-container p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
+.file-input {
+    margin-bottom: 20px;
+    font-size: 1rem;
+    width: 100%; /* Full-width on smaller screens */
+    max-width: 400px; /* Limit width on larger screens */
+}
+
+.flash {
+    margin: 10px auto;
+    padding: 10px;
+    max-width: 400px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    text-align: center;
+}
+
+.flash.danger {
+    background-color: #dc3545;
+}
+
+.about-container {
+    max-width: 800px; /* Limit the width for better readability */
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 20px; /* Add space inside the container */
+    line-height: 1.6; /* Improve line spacing for better readability */
+}
+
+/* Responsive Design */
+
+/* For tablets and smaller devices (max-width: 768px) */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column; /* Stack header elements */
+        text-align: center;
+    }
+
+    header nav {
+        flex-direction: column; /* Stack navigation links */
+        gap: 10px;
+    }
+
+    .home-container h2 {
+        font-size: 1.8rem;
+    }
+
+    .home-container p {
+        font-size: 1rem;
+    }
+
+    .button {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+
+    .upload-container h2 {
+        font-size: 1.8rem;
+    }
+
+    .upload-container p {
+        font-size: 1rem;
+    }
+}
+
+/* For mobile devices (max-width: 480px) */
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.2rem;
+    }
+
+    header nav a {
+        font-size: 0.9rem;
+    }
+
+    .home-container h2 {
+        font-size: 1.5rem;
+    }
+
+    .home-container p {
+        font-size: 0.9rem;
+    }
+
+    .button {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+
+    .upload-container h2 {
+        font-size: 1.5rem;
+    }
+
+    .upload-container p {
+        font-size: 0.9rem;
+    }
+}

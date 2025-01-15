@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - SER Project{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <h2>Analyze Your Emotions from Speech</h2>
+    <p>Select an option below to get started:</p>
+
+    <div class="buttons">
+        <a href="{{ url_for('upload') }}" class="button">Upload Recorded File</a>
+        <a href="{{ url_for('record') }}" class="button">Record Your Voice</a>
+    </div>
+</div>
+{% endblock %}
+
+

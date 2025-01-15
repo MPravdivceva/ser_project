@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}About Project - SER{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <h2>About This Project</h2>
+    <p>
+        This web-based Speech Emotion Recognition (SER) system is my dissertation project for a Bachelor of Science (Honors) degree in Software Development with Cyber Security at the University of Stirling. This project combines advanced machine learning techniques with modern web development to create a platform capable of classifying human emotions based on speech.
+    </p>
+
+    <h3>What is Speech Emotion Recognition (SER)?</h3>
+    <p>
+        Speech Emotion Recognition (SER) is a field of artificial intelligence and signal processing that focuses on analyzing and interpreting the emotional states conveyed in human speech. Beyond the words spoken, speech contains non-verbal information such as tone, pitch, and rhythm, which can indicate emotions like happiness, sadness, anger, or neutrality.
+    </p>
+    <p>
+        SER systems have various real-world applications, including improving human-computer interaction, enhancing customer service through call center analysis, and aiding in mental health diagnostics by detecting emotional distress from voice patterns.
+    </p>
+
+    <h3>How This System Works</h3>
+    <p>
+        This project uses machine learning to classify emotions from speech through the following steps:
+    </p>
+    <ol>
+        <li>
+            <strong>Data Preprocessing:</strong> Audio files are processed to extract relevant features such as Mel-Frequency Cepstral Coefficients (MFCC), which represent the frequency spectrum of the audio signal.
+        </li>
+        <li>
+            <strong>Feature Extraction:</strong> Additional features like pitch and energy are analyzed to create a comprehensive representation of the audio file.
+        </li>
+        <li>
+            <strong>Model Training:</strong> A supervised machine learning model is trained on labeled datasets to recognize patterns in speech features associated with specific emotions.
+        </li>
+        <li>
+            <strong>Classification:</strong> The trained model predicts the emotional state of new audio inputs provided by users.
+        </li>
+    </ol>
+
+    <h3>Datasets Used</h3>
+    <p>
+        To develop and train the machine learning model, publicly available datasets were used, including:
+    </p>
+    <ul>
+        <li>
+            <strong>RAVDESS (Ryerson Audio-Visual Database of Emotional Speech and Song):</strong> A widely-used dataset containing high-quality recordings of emotional speech and songs, labeled with 8 different emotions.
+        </li>
+        <li>
+            <strong>EMO-DB (Berlin Database of Emotional Speech):</strong> A collection of German emotional speech samples, useful for cross-linguistic studies.
+        </li>
+        <li>
+            <strong>TESS (Toronto Emotional Speech Set):</strong> A dataset focused on different emotional states in North American English.
+        </li>
+    </ul>
+    <p>
+        These datasets provided a diverse set of examples, allowing the system to generalize across a range of speech and emotional patterns.
+    </p>
+
+    <h3>Technical Stack</h3>
+    <p>
+        The project is built using the following technologies:
+    </p>
+    <ul>
+        <li><strong>Backend:</strong> Flask (Python web framework)</li>
+        <li><strong>Frontend:</strong> HTML, CSS, JavaScript</li>
+        <li><strong>Storage:</strong> Azure Blob Storage (for production deployment)</li>
+        <li><strong>Machine Learning:</strong> Python libraries such as <code>librosa</code> for feature extraction, <code>numpy</code> for data manipulation, and <code>sklearn</code> for model training.</li>
+    </ul>
+
+    <h3>GitHub Repository</h3>
+    <p>
+        The full source code for this project is available on GitHub. Feel free to explore the code, contribute, or use it as a reference for your own projects:
+    </p>
+    <p>
+        <a href="https://github.com/your-username/ser_project" target="_blank">View the GitHub Repository</a>
+    </p>
+
+    <h3>Challenges and Achievements</h3>
+    <p>
+        This project presented several challenges, including:
+    </p>
+    <ul>
+        <li>Designing a scalable web application capable of handling multiple user inputs.</li>
+        <li>Ensuring secure storage and processing of user-uploaded audio files.</li>
+        <li>Training a machine learning model to achieve high accuracy in emotion classification, despite the inherent variability in speech patterns.</li>
+    </ul>
+    <p>
+        Overcoming these challenges required extensive research, experimentation, and a strong foundation in software development and machine learning. The resulting system is a robust and scalable application that demonstrates my ability to combine theory with practical implementation.
+    </p>
+
+    <h3>Acknowledgments</h3>
+    <p>
+        I would like to express my gratitude to my academic supervisor, professors, and peers who supported me throughout this journey. Special thanks to the University of Stirling for providing the resources and guidance that made this project possible.
+    </p>
+</div>
+{% endblock %}
