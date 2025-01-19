@@ -1,17 +1,165 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Record Voice</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <header>
-        <h1>Record Your Voice</h1>
-    </header>
-    <main>
-        <p>This page will allow you to record your voice directly.</p>
-    </main>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Record Your Voice</h1>
+
+<!-- Visualization -->
+<div class="visualization-container">
+    <canvas id="visualizer" width="400" height="150"></canvas>
+</div>
+
+<!-- Recording Buttons -->
+<div class="controls">
+    <button id="start-recording" class="button">Start Recording</button>
+    <button id="stop-recording" class="button" disabled>Stop Recording</button>
+</div>
+
+<!-- Audio Player and Replay Section -->
+<div class="audio-container">
+    <h2 class="audio-label">Replay</h2>
+    <audio id="audio-playback" controls></audio>
+</div>
+
+<!-- Upload Form -->
+<div class="upload-section">
+    <form id="upload-form" method="POST" enctype="multipart/form-data" action="/record">
+        <input type="file" id="audio-file" name="audio-file" style="display: none;">
+        <button id="upload-btn" class="button" disabled>Upload Recording</button>
+    </form>
+</div>
+
+<script>
+let mediaRecorder;
+let recordedChunks = [];
+let isRecording = false;
+let audioContext;
+let analyser;
+let source;
+let canvas = document.getElementById('visualizer');
+let canvasContext = canvas.getContext('2d');
+
+const startRecordingBtn = document.getElementById('start-recording');
+const stopRecordingBtn = document.getElementById('stop-recording');
+const recordingStatus = document.getElementById('recording-status');
+const audioPlayback = document.getElementById('audio-playback');
+const uploadBtn = document.getElementById('upload-btn');
+const audioFileInput = document.getElementById('audio-file');
+
+startRecordingBtn.addEventListener('click', async () => {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+                recordedChunks.push(e.data);
+            }
+        };
+
+        mediaRecorder.onstart = () => {
+            isRecording = true;
+            startRecordingBtn.disabled = true;
+            stopRecordingBtn.disabled = false;
+
+            startVisualizer(stream);
+        };
+
+        mediaRecorder.onstop = () => {
+            isRecording = false;
+            const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+
+            // Set the recorded audio as the source of the audio player
+            audioPlayback.src = audioUrl;
+
+            // Generate a unique filename
+            const uniqueFilename = 'recording_' + Date.now() + '.wav';
+
+            // Create a file and attach it to the input
+            const file = new File([audioBlob], uniqueFilename, { type: 'audio/wav' });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            audioFileInput.files = dataTransfer.files;
+
+            // Enable the upload button
+            uploadBtn.disabled = false;
+
+            startRecordingBtn.disabled = false;
+            stopRecordingBtn.disabled = true;
+
+            stopVisualizer();
+        };
+
+        mediaRecorder.start();
+        recordedChunks = [];
+    } catch (err) {
+        console.error('Error accessing microphone:', err);
+        alert('Microphone access is required to record audio.');
+    }
+});
+
+stopRecordingBtn.addEventListener('click', () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+    }
+});
+
+// Visualizer setup
+function startVisualizer(stream) {
+    audioContext = new AudioContext();
+    analyser = audioContext.createAnalyser();
+    source = audioContext.createMediaStreamSource(stream);
+    source.connect(analyser);
+
+    drawWave();
+}
+
+function stopVisualizer() {
+    if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+    }
+}
+
+let animationFrameId;
+function drawWave() {
+    analyser.fftSize = 2048;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const draw = () => {
+        canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+        analyser.getByteTimeDomainData(dataArray);
+
+        canvasContext.lineWidth = 2;
+        canvasContext.strokeStyle = 'blue';
+        canvasContext.beginPath();
+
+        const sliceWidth = canvas.width / bufferLength;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+            const v = dataArray[i] / 128.0;
+            const y = (v * canvas.height) / 2;
+
+            if (i === 0) {
+                canvasContext.moveTo(x, y);
+            } else {
+                canvasContext.lineTo(x, y);
+            }
+
+            x += sliceWidth;
+        }
+
+        canvasContext.lineTo(canvas.width, canvas.height / 2);
+        canvasContext.stroke();
+
+        animationFrameId = requestAnimationFrame(draw);
+    };
+
+    draw();
+}
+
+</script>
+{% endblock %}

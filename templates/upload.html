@@ -7,11 +7,13 @@
     <h2>Upload Your Audio File</h2>
     <p>Please upload a WAV, MP3, or M4A file for emotion recognition.</p>
 
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages(with_categories=True) %}
+    <!-- Flash messages specific to the upload page -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                <div class="flash {{ category }}">{{ message }}</div>
+                {% if "upload" in category %}
+                    <div class="flash {{ 'success' if 'success' in category else 'danger' }}">{{ message }}</div>
+                {% endif %}
             {% endfor %}
         {% endif %}
     {% endwith %}

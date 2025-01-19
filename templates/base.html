@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="{{ request.endpoint }}">
     <header>
         <div class="header-container">
             <h1>Speech Emotion Recognition</h1>
@@ -20,9 +20,11 @@
             <nav class="nav-links">
                 <a href="{{ url_for('index') }}">Home</a>
                 <a href="{{ url_for('upload') }}">Upload</a>
+                <a href="{{ url_for('record') }}">Record</a>
                 <a href="{{ url_for('about') }}">About Project</a>
                 <a href="{{ url_for('dataset') }}">Dataset</a>
                 <a href="{{ url_for('ml_model') }}">ML Model</a>
+                <a href="{{ url_for('list_files') }}">Files</a>
             </nav>
         </div>
     </header> 

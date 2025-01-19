@@ -254,3 +254,234 @@ footer {
         font-size: 0.9rem;
     }
 }
+/* General button styling */
+button {
+    padding: 10px 15px;
+    font-size: 16px;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Active recording button style */
+button.recording {
+    background-color: red;
+    color: white;
+    border: 2px solid darkred;
+}
+button:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+
+/* Recording indicator */
+#recording-indicator {
+    margin-top: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: red;
+    display: none;
+}
+
+/* Controls container */
+.controls {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+}
+
+table thead tr {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+.btn-danger {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-danger:hover {
+    background-color: #e60000;
+}
+.alert {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-weight: bold;
+}
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+.audio-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.audio-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+canvas {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 10px;
+    background: #f9f9f9;
+}
+
+.button.loading {
+    pointer-events: none;
+    opacity: 0.8;
+    background: repeating-linear-gradient(
+        -45deg,
+        var(--primary-color),
+        var(--primary-color) 10px,
+        var(--primary-hover) 10px,
+        var(--primary-hover) 20px
+    );
+    animation: loading 1s linear infinite;
+}
+
+@keyframes loading {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 100% 0;
+    }
+}
+
+
+/* Specific styles for the record page */
+body.record {
+    background-color: #ffffff;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Recording page layout */
+body.record .visualization-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+body.record canvas {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #f9f9f9;
+    width: 100%;
+    max-width: 600px; /* Limit maximum width */
+    margin: 0 auto;
+}
+
+body.record .controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+body.record .audio-container {
+    text-align: center;
+    margin-top: 30px;
+}
+
+body.record .audio-label {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+body.record .upload-section {
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Buttons on the record page */
+body.record .button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+body.record .button:hover {
+    background-color: #0056b3;
+}
+
+body.record button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+body.record button.recording {
+    background-color: red;
+    color: white;
+    border: 2px solid darkred;
+}
+
+body.record button:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+/* Visualizer-specific styles */
+body.record canvas {
+    width: 100%;
+    height: 100px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+body.record #recording-indicator {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: red;
+    margin-top: 20px;
+    display: none;
+}
