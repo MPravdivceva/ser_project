@@ -13,10 +13,10 @@ This project is a web-based **Speech Emotion Recognition (SER)** system that use
 
 - **Backend**: Flask (Python web framework)
 - **Frontend**: HTML, CSS, JavaScript (with a responsive design)
-- **Storage**: Azure Blob Storage (optional, for production)
-- **Deployment**: Designed for deployment on platforms like Azure or AWS
+- **Storage**: Azure Blob Storage (for production)
+- **Deployment**: Designed for deployment on Azure
 
 ## Directory Structure
 
-ser_project/ ├── app.py # Main Flask application ├── templates/ # HTML files │ ├── base.html # Base template for all pages │ ├── index.html # Home page │ ├── upload.html # Upload page │ ├── about.html # About project page │ ├── dataset.html # Dataset information page │ ├── ml_model.html # ML model details page ├── static/ # Static files │ ├── style.css # CSS styles │ ├── script.js # JavaScript (if used for interactivity) ├── requirements.txt # Python dependencies ├── README.md # Project documentation (this file)
+ser_project/ ├── app.py # Main Flask application ├── templates/ # HTML files │ ├── base.html # Base template for all pages │ ├── index.html # Home page │ ├── upload.html # Upload page │ ├── about.html # About project page │ ├── dataset.html # Dataset information page │ ├── ml_model.html # ML model details page ├── static/ # Static files │ ├── style.css # CSS styles │ ├── script.js # JavaScript ├── requirements.txt # Python dependencies ├── README.md # Project documentation (this file)
 
