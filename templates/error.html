@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Error - SER Project{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <h2>Oops! Something went wrong</h2>
+    <p>We couldn't process your request. Please try again.</p>
+    <a href="{{ url_for('index') }}" class="try-again">Return to Home</a>
+</div>
+
+<style>
+    .error-container {
+        text-align: center;
+        padding: 50px;
+    }
+    .try-again {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 18px;
+        color: white;
+        background-color: #007BFF;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+    }
+    .try-again:hover {
+        background-color: #0056b3;
+    }
+</style>
+{% endblock %}

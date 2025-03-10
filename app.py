@@ -12,6 +12,15 @@ import librosa
 import soundfile as sf
 import tempfile
 
+# Load environment variables
+load_dotenv()
+
+# Fetch the Azure Blob Storage connection string from environment variables
+connection_string = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+
+if not connection_string:
+    raise ValueError("Azure Storage Connection String not found. Ensure it is set in the .env file.")
+
 def extract_features(file_path):
     try:
         # Load the audio file
@@ -42,14 +51,6 @@ def extract_features(file_path):
         print(f"Error extracting features: {e}")
         return None
 
-# Load environment variables
-load_dotenv()
-
-# Fetch the Azure Blob Storage connection string from environment variables
-connection_string = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
-
-if not connection_string:
-    raise ValueError("Azure Storage Connection String not found. Ensure it is set in the .env file.")
 
 # Initialize BlobServiceClient
 blob_service_client = BlobServiceClient.from_connection_string(connection_string)
