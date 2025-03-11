@@ -14,7 +14,7 @@ import tempfile
 from sklearn.preprocessing import StandardScaler
 import joblib
 import pandas as pd
-
+import traceback
 SCALER_LOCAL_PATH = "scaler.pkl"
 
 if os.path.exists(SCALER_LOCAL_PATH):
@@ -36,57 +36,44 @@ connection_string = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
 if not connection_string:
     raise ValueError("Azure Storage Connection String not found. Ensure it is set in the .env file.")
 
+import traceback  # Add this to the top of your script
+
 def extract_features(file_path):
     try:
-        # Check if the file exists
-        if not os.path.exists(file_path):
-            print(f"Error: File {file_path} does not exist!")
-            return None
-
-        if os.path.getsize(file_path) == 0:
-            print(f"Error: File {file_path} is empty!")
-            return None
-
         print(f"Extracting features from: {file_path}")
         
-
         # Load the audio file
         y, sr = librosa.load(file_path, sr=22050)  # Convert to 22050 Hz
         print(f"Audio Loaded: y.shape={y.shape}, sr={sr}")
 
-        # Extract MFCC features
+        # Extract features
         mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
-        mfccs_mean = np.mean(mfccs, axis=1)
-        print(f"MFCCs shape: {mfccs.shape}, Mean: {mfccs_mean}")
-        
-        # Extract Chroma features
         chroma = librosa.feature.chroma_stft(y=y, sr=sr)
-        chroma_mean = np.mean(chroma, axis=1)
-        print(f"Chroma shape: {chroma.shape}, Mean: {chroma_mean}")
-        
-        # Extract Mel Spectrogram
         mel_spec = librosa.feature.melspectrogram(y=y, sr=sr)
-        
-        # Convert Mel Spectrogram to dB scale
         mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
+
+        # Ensure valid shapes
+        if mfccs.shape[1] == 0 or chroma.shape[1] == 0 or mel_spec.shape[1] == 0:
+            raise ValueError("Feature extraction resulted in empty arrays!")
+
+        # Compute means
+        mfccs_mean = np.mean(mfccs, axis=1)
+        chroma_mean = np.mean(chroma, axis=1)
         mel_spec_mean = np.mean(mel_spec_db, axis=1)
-        print(f"Mel Spectrogram shape: {mel_spec.shape}, Mean: {mel_spec_mean}")
 
-        # Flatten and concatenate features
+        # Concatenate
         features = np.hstack((mfccs_mean, chroma_mean, mel_spec_mean))
-        print(f"Final Extracted Features Shape: {features.shape}")
-        print(f"Extracted Features: {features}")
+        print(f"Extracted Features Shape: {features.shape}")
 
-        # Convert to DataFrame before applying StandardScaler to keep feature names
+        # Convert to DataFrame
         feature_df = pd.DataFrame([features], columns=scaler.feature_names_in_)
-
-        # **Apply Standard Scaling using the loaded scaler**
         features_scaled = scaler.transform(feature_df)
 
-        return features_scaled  # Return normalized features
+        return features_scaled
 
     except Exception as e:
         print(f"Error extracting features: {e}")
+        traceback.print_exc()  # Prints the full error message
         return None
 
 

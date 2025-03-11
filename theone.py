@@ -38,21 +38,11 @@ if not connection_string:
 
 def extract_features(file_path):
     try:
-        # Check if the file exists
-        if not os.path.exists(file_path):
-            print(f"Error: File {file_path} does not exist!")
-            return None
-
-        if os.path.getsize(file_path) == 0:
-            print(f"Error: File {file_path} is empty!")
-            return None
-
         print(f"Extracting features from: {file_path}")
         
 
         # Load the audio file
         y, sr = librosa.load(file_path, sr=22050)  # Convert to 22050 Hz
-        print(f"Audio Loaded: y.shape={y.shape}, sr={sr}")
 
         # Extract MFCC features
         mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
