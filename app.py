@@ -11,6 +11,21 @@ import numpy as np
 import librosa
 import soundfile as sf
 import tempfile
+from sklearn.preprocessing import StandardScaler
+import joblib
+import pandas as pd
+
+SCALER_LOCAL_PATH = "scaler.pkl"
+
+if os.path.exists(SCALER_LOCAL_PATH):
+    scaler = joblib.load(SCALER_LOCAL_PATH)
+    print("Scaler loaded successfully!")
+else:
+    raise FileNotFoundError("scaler.pkl not found! Make sure it's included in the deployment.")
+
+
+
+
 
 # Load environment variables
 load_dotenv()
@@ -23,29 +38,42 @@ if not connection_string:
 
 def extract_features(file_path):
     try:
+        print(f"Extracting features from: {file_path}")
+        
+
         # Load the audio file
         y, sr = librosa.load(file_path, sr=22050)  # Convert to 22050 Hz
 
         # Extract MFCC features
         mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
+        mfccs_mean = np.mean(mfccs, axis=1)
+        print(f"MFCCs shape: {mfccs.shape}, Mean: {mfccs_mean}")
         
         # Extract Chroma features
         chroma = librosa.feature.chroma_stft(y=y, sr=sr)
+        chroma_mean = np.mean(chroma, axis=1)
+        print(f"Chroma shape: {chroma.shape}, Mean: {chroma_mean}")
         
         # Extract Mel Spectrogram
         mel_spec = librosa.feature.melspectrogram(y=y, sr=sr)
         
         # Convert Mel Spectrogram to dB scale
         mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
+        mel_spec_mean = np.mean(mel_spec_db, axis=1)
+        print(f"Mel Spectrogram shape: {mel_spec.shape}, Mean: {mel_spec_mean}")
 
         # Flatten and concatenate features
-        features = np.hstack((
-            np.mean(mfccs, axis=1),  # Take mean across time axis
-            np.mean(chroma, axis=1),
-            np.mean(mel_spec_db, axis=1)
-        ))
+        features = np.hstack((mfccs_mean, chroma_mean, mel_spec_mean))
+        print(f"Final Extracted Features Shape: {features.shape}")
+        print(f"Extracted Features: {features}")
 
-        return np.expand_dims(features, axis=0)  # Reshape for model input
+        # Convert to DataFrame before applying StandardScaler to keep feature names
+        feature_df = pd.DataFrame([features], columns=scaler.feature_names_in_)
+
+        # **Apply Standard Scaling using the loaded scaler**
+        features_scaled = scaler.transform(feature_df)
+
+        return features_scaled  # Return normalized features
 
     except Exception as e:
         print(f"Error extracting features: {e}")
@@ -63,25 +91,27 @@ container_client = blob_service_client.get_container_client(container_name)
 MODEL_CONTAINER_NAME = "models"
 MODEL_BLOB_NAME = "cnn_model.keras"
 
-# Load model from Azure Blob Storage
+# Define local model path to avoid re-downloading
+MODEL_LOCAL_PATH = "model.keras"
+
 def load_model():
     try:
+        # Check if model is already downloaded
+        if os.path.exists(MODEL_LOCAL_PATH):
+            print("Loading model from local storage...")
+            return tf.keras.models.load_model(MODEL_LOCAL_PATH)
+
         print("Downloading model from Azure Blob Storage...")
         model_container_client = blob_service_client.get_container_client(MODEL_CONTAINER_NAME)
         blob_client = model_container_client.get_blob_client(MODEL_BLOB_NAME)
-        
-        # Download model file
+
+        # Download and save model
         model_stream = io.BytesIO(blob_client.download_blob().readall())
+        with open(MODEL_LOCAL_PATH, "wb") as f:
+            f.write(model_stream.read())
 
-        # Save the model to a temporary file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".keras") as temp_model_file:
-            temp_model_file.write(model_stream.getbuffer())
-            temp_model_path = temp_model_file.name  # Save the file path
-
-        print(f"Loading model from {temp_model_path}...")
-        
-        # Load the model from the saved file
-        model = tf.keras.models.load_model(temp_model_path)
+        print(f"Loading model from {MODEL_LOCAL_PATH}...")
+        model = tf.keras.models.load_model(MODEL_LOCAL_PATH)
 
         print("Model loaded successfully!")
         return model
@@ -92,6 +122,7 @@ def load_model():
 
 # Load the model at startup
 model = load_model()
+
 
 # Flask application setup
 app = Flask(__name__)
@@ -237,39 +268,55 @@ def delete_file(filename):
     
     return redirect('/files')
 
+
+
 @app.route('/predict/<filename>', methods=['GET'])
 def predict_emotion(filename):
+    temp_audio_path = f"temp_{filename}"
+    
     try:
         # Download the file from Azure Blob Storage
         blob_client = container_client.get_blob_client(blob=filename)
         file_stream = io.BytesIO(blob_client.download_blob().readall())
 
         # Save the file temporarily
-        temp_audio_path = f"temp_{filename}"
         with open(temp_audio_path, "wb") as f:
             f.write(file_stream.read())
 
         # Extract features from the audio
         features = extract_features(temp_audio_path)
-
         if features is None:
-            return render_template("error.html", message="Failed to extract features from audio file.")
+            raise ValueError("Feature extraction failed!")
+
+         
 
         # Run prediction using the CNN model
-        prediction = model.predict(features)
+        prediction = model.predict(features)  
+        print(f"Raw Model Output: {prediction}")  # Print probabilities
         predicted_label = np.argmax(prediction)
+        print(f"Predicted Label Index: {predicted_label}")  # Print index
 
         # Map the prediction to an emotion
         emotion_labels = ["Angry", "Fear", "Happy", "Neutral", "Sad", "Frustration", "Excitement"]
         predicted_emotion = emotion_labels[predicted_label]
+        print(f"Predicted Emotion: {predicted_emotion}")  # Print emotion
 
         # Render the prediction page with emotion and animation
         return render_template('prediction.html', filename=filename, emotion=predicted_emotion)
+    
+    except ValueError as e:
+        flash(str(e), 'error')
+        return redirect(url_for('index'))
 
     except Exception as e:
+        flash("Something went wrong! Please try again.", 'error')
         print(f"Error processing prediction: {e}")
-        return render_template("error.html", message="Failed to process prediction.")
-
+        return redirect(url_for('index'))
+    
+    finally:
+        # Always delete the temporary audio file
+        if os.path.exists(temp_audio_path):
+            os.remove(temp_audio_path)
 
 # Run the Flask app
 if __name__ == "__main__":
