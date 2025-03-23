@@ -16,7 +16,7 @@ import pandas as pd
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import os
-os.environ["PATH"] += os.pathsep + os.path.abspath("bin")
+
 
 
 
