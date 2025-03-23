@@ -206,7 +206,7 @@ def about():
 def dataset():
     return render_template('dataset.html')
 
-# ML Model page
+# ML Model page page
 @app.route('/ml_model')
 def ml_model():
     return render_template('ml_model.html')
