@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Feature Extraction - SER{% endblock %}
+
+{% block content %}
+
+<div class="notebook-container">
+    <h1>Feature Extraction in Speech Emotion Recognition</h1>
+
+    <div class="section">
+        <h2>What is Feature Extraction?</h2>
+        <p>
+            In Speech Emotion Recognition (SER), emotional cues are often hidden in vocal characteristics like tone, pitch, and intensity. Feature extraction is the process of converting raw audio into meaningful numerical representations that a machine learning model can understand.
+            Since raw waveforms are too complex for direct analysis, we transform them into structured features that highlight patterns related to human emotions. Extracting the right features helps the model learn to distinguish between emotions like happiness, sadness, and anger.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Features Used in This Project</h2>
+        <ul>
+            <li><strong>Mel-Spectrogram</strong>: A visual time-frequency representation of audio, capturing the distribution of energy across frequencies. It's ideal for CNN-based models.</li>
+            <li><strong>MFCCs (Mel-Frequency Cepstral Coefficients)</strong>: These represent the short-term power spectrum and capture the timbral texture of speech. Widely used in speech and music analysis.</li>
+            <li><strong>Zero-Crossing Rate (ZCR)</strong>: Measures how often the audio signal changes sign. It can indicate noisiness or emotion-driven articulation.</li>
+            <li><strong>Root Mean Square (RMS) Energy</strong>: Reflects the loudness or intensity of the audio. Higher RMS can be associated with strong emotions like anger or excitement.</li>
+        </ul>
+    </div>
+
+</div>
+{% endblock %}

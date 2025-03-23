@@ -3,63 +3,10 @@
 {% block title %}Emotion Prediction - SER Project{% endblock %}
 
 {% block content %}
-<style>
-    /* Background changes dynamically */
-    .prediction-container {
-        text-align: center;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
-        animation: fadeIn 1.5s ease-in-out;
-    }
-
-    /* Emotion text animation */
-    .emotion-text {
-        font-size: 28px;
-        font-weight: bold;
-        opacity: 0;
-        animation: fadeInText 2s ease-in-out forwards;
-    }
-
-    /* Animation for appearing */
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeInText {
-        from { opacity: 0; transform: scale(0.8); }
-        to { opacity: 1; transform: scale(1); }
-    }
-
-    /* Emotion GIFs */
-    .emotion-gif {
-        width: 150px;
-        height: 150px;
-        margin: 20px auto;
-    }
-
-    /* Try Again Button */
-    .try-again {
-        display: inline-block;
-        margin-top: 20px;
-        padding: 10px 20px;
-        font-size: 18px;
-        color: white;
-        background-color: #007BFF;
-        text-decoration: none;
-        border-radius: 5px;
-        transition: background 0.3s ease;
-    }
-
-    .try-again:hover {
-        background-color: #0056b3;
-    }
-</style>
 
 <!-- Prediction Page Content -->
 <div class="prediction-container" id="prediction-box">
-    <h2>Emotion Prediction Result</h2>
+    <h2>Result</h2>
     
     <p class="emotion-text">Detected Emotion: <span id="emotion-text">{{ emotion }}</span></p>
     
@@ -71,7 +18,7 @@
 </div>
 
 <!-- Dynamic Effects Based on Emotion -->
-<<script>
+<script>
     var emotion = "{{ emotion }}";  
     var emotionText = document.getElementById("emotion-text");
     var emotionGif = document.getElementById("emotion-gif");
@@ -79,22 +26,19 @@
 
     // Define Emotion Styles & GIFs
     var emotionStyles = {
-        "Happy": { color: "#FFD700", gif: "/static/happy.gif", bg: "#FFF7B2" },
-        "Sad": { color: "#3498DB", gif: "/static/sad.gif", bg: "#D6EAF8" },
-        "Angry": { color: "#E74C3C", gif: "/static/angry.gif", bg: "#FADBD8" },
-        "Fear": { color: "#8E44AD", gif: "/static/fear.gif", bg: "#E8DAEF" },
-        "Neutral": { color: "#2ECC71", gif: "/static/neutral.gif", bg: "#D5F5E3" },
-        "Frustration": { color: "#FF5733", gif: "/static/frustration.gif", bg: "#FAD7A0" },
-        "Excitement": { color: "#FF33FF", gif: "/static/excitement.gif", bg: "#F5CBA7" }
+        "Anger": { color: "#000000", gif: "/static/anger.gif", bg: "#ED2021" },
+        "Frustration": { color: "#000000", gif: "/static/frustration.gif", bg: "#BB59D7" },
+        "Happiness": { color: "#000000", gif: "/static/cat-16676_128.gif", bg: "#FFDE59" },
+        "Neutral": { color: "#000000", gif: "/static/neutral.gif", bg: "#EFC3CA" },
+        "Sad": { color: "#000000", gif: "/static/sad.gif", bg: "#4540D3" },
     };
 
     // Apply Styles Dynamically
     if (emotionStyles[emotion]) {
         emotionText.style.color = emotionStyles[emotion].color;
         emotionGif.src = emotionStyles[emotion].gif;
-        predictionBox.style.backgroundColor = emotionStyles[emotion].bg;
+        predictionBox.style.backgroundColor = emotionStyles[emotion].bg; // Change the box
     }
 </script>
-
 
 {% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Choose Existing File{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <h2>Select an Existing Audio File</h2>
+
+    <form action="{{ url_for('predict_existing_file') }}" method="POST">
+        {% if files %}
+            {% for file in files %}
+            <div style="margin-bottom: 10px;">
+                <!-- Button to Select File -->
+                <input type="radio" id="{{ file }}" name="filename" value="{{ file }}" required>
+                <label for="{{ file }}">{{ file }}</label>
+
+                <!-- Play Button -->
+                <audio controls>
+                    <source src="{{ url_for('static', filename='samples/' + file) }}" type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+            {% endfor %}
+            <button type="submit">Get Prediction</button>
+        {% else %}
+            <p style="color: red;">No audio files available. Please add files to <code>static/samples/</code>.</p>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

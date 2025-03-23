@@ -14,17 +14,8 @@ import tempfile
 from sklearn.preprocessing import StandardScaler
 import joblib
 import pandas as pd
-
-SCALER_LOCAL_PATH = "scaler.pkl"
-
-if os.path.exists(SCALER_LOCAL_PATH):
-    scaler = joblib.load(SCALER_LOCAL_PATH)
-    print("Scaler loaded successfully!")
-else:
-    raise FileNotFoundError("scaler.pkl not found! Make sure it's included in the deployment.")
-
-
-
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
 # Load environment variables
@@ -49,41 +40,49 @@ def extract_features(file_path):
 
         print(f"Extracting features from: {file_path}")
         
+        # Hardcoded mean and std values
+        mean = np.array([-20.297016])
+        std = np.array([42.73151]) 
+        std[std==0] = 1 # Prevent devision by zero
+
+        # Constants (Ensure consistency with training)
+        FRAME_LENGTH = 2048
+        HOP_LENGTH = 512
+        MAX_LEN = 130
 
         # Load the audio file
-        y, sr = librosa.load(file_path, sr=22050)  # Convert to 22050 Hz
+        y, sr = librosa.load(file_path, sr=None)
         print(f"Audio Loaded: y.shape={y.shape}, sr={sr}")
 
-        # Extract MFCC features
-        mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
-        mfccs_mean = np.mean(mfccs, axis=1)
-        print(f"MFCCs shape: {mfccs.shape}, Mean: {mfccs_mean}")
-        
-        # Extract Chroma features
-        chroma = librosa.feature.chroma_stft(y=y, sr=sr)
-        chroma_mean = np.mean(chroma, axis=1)
-        print(f"Chroma shape: {chroma.shape}, Mean: {chroma_mean}")
-        
-        # Extract Mel Spectrogram
-        mel_spec = librosa.feature.melspectrogram(y=y, sr=sr)
-        
-        # Convert Mel Spectrogram to dB scale
-        mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
-        mel_spec_mean = np.mean(mel_spec_db, axis=1)
-        print(f"Mel Spectrogram shape: {mel_spec.shape}, Mean: {mel_spec_mean}")
+        # Extract features (matching training process)
+        mel_spectrogram = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=64)
+        mel_spectrogram_db = librosa.power_to_db(mel_spectrogram)
+        mel_spectrogram_db = pad_sequences([mel_spectrogram_db.T], maxlen=MAX_LEN, padding='post', truncating='post')
 
-        # Flatten and concatenate features
-        features = np.hstack((mfccs_mean, chroma_mean, mel_spec_mean))
-        print(f"Final Extracted Features Shape: {features.shape}")
-        print(f"Extracted Features: {features}")
+        zcr = librosa.feature.zero_crossing_rate(y, frame_length=FRAME_LENGTH, hop_length=HOP_LENGTH)
+        zcr = pad_sequences([zcr.T], maxlen=MAX_LEN, padding='post', truncating='post')
 
-        # Convert to DataFrame before applying StandardScaler to keep feature names
-        feature_df = pd.DataFrame([features], columns=scaler.feature_names_in_)
+        rms = librosa.feature.rms(y=y, frame_length=FRAME_LENGTH, hop_length=HOP_LENGTH)
+        rms = pad_sequences([rms.T], maxlen=MAX_LEN, padding='post', truncating='post')
 
-        # **Apply Standard Scaling using the loaded scaler**
-        features_scaled = scaler.transform(feature_df)
+        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13, hop_length=HOP_LENGTH)
+        mfcc = pad_sequences([mfcc.T], maxlen=MAX_LEN, padding='post', truncating='post')
 
-        return features_scaled  # Return normalized features
+        # Check dimensions before concatenation
+        print(f"Shapes before concatenation: Mel={mel_spectrogram_db.shape}, ZCR={zcr.shape}, RMS={rms.shape}, MFCC={mfcc.shape}")
+
+        # Combine features in the same order as training
+        features = np.concatenate([mel_spectrogram_db, zcr, rms, mfcc], axis=-1)
+
+        # Apply normalization (Standardization)
+        features = (features - mean) / std
+
+        # Reshape to match model input (batch_size, 130, 79, 1)
+        features = features.reshape(1, 130, 79, 1)
+
+        print(f"Final feature shape: {features.shape}")
+
+        return features  # Return normalized features
 
     except Exception as e:
         print(f"Error extracting features: {e}")
@@ -99,7 +98,7 @@ container_client = blob_service_client.get_container_client(container_name)
 
 # Define model container and filename
 MODEL_CONTAINER_NAME = "models"
-MODEL_BLOB_NAME = "cnn_model.keras"
+MODEL_BLOB_NAME = "model.keras"
 
 # Define local model path to avoid re-downloading
 MODEL_LOCAL_PATH = "model.keras"
@@ -247,7 +246,7 @@ def record():
 @app.route('/files')
 def list_files():
     try:
-        # List all blobs (files) in the container
+        # List all blobs in the container
         blob_list = container_client.list_blobs()
         files = [
             {
@@ -261,6 +260,42 @@ def list_files():
         print(f"Error listing files: {e}")
         flash("Could not fetch the list of files. Please try again later.", "files-error")
         return redirect(url_for('index'))
+
+@app.route('/features')
+def features():
+    return render_template('feature_extraction.html')
+
+@app.route('/choose')
+def choose():
+    samples_folder = "static/samples"
+
+    # Ensure directory exists
+    if not os.path.exists(samples_folder):
+        os.makedirs(samples_folder)
+
+    # Get only audio files (.wav, .mp3, .m4a)
+    audio_extensions = (".wav", ".mp3", ".ogg", ".m4a")
+    local_files = [f for f in os.listdir(samples_folder) if f.endswith(audio_extensions)]
+
+
+    if not local_files:
+        flash("No audio files found in 'static/samples/'. Please add some files.", "error")
+
+    return render_template('choose.html', files=local_files)
+
+
+
+@app.route('/predict_existing', methods=['POST'])
+def predict_existing_file():
+    filename = request.form.get('filename')
+
+    if not filename:
+        flash("No file selected! Please choose an audio file.", "error")
+        return redirect(url_for('choose'))
+
+    return redirect(url_for('predict_local_emotion', filename=filename))
+
+
 
 # Delete file
 @app.route('/delete/<filename>', methods=['POST'])
@@ -278,6 +313,35 @@ def delete_file(filename):
     
     return redirect('/files')
 
+@app.route('/predict_local/<filename>', methods=['GET'])
+def predict_local_emotion(filename):
+    file_path = os.path.join("static/samples", filename)
+
+    try:
+        # Check if file exists locally
+        if not os.path.exists(file_path):
+            flash("Local file not found!", "error")
+            return redirect(url_for('choose'))
+
+        # Extract features from the local audio file
+        features = extract_features(file_path)
+        if features is None:
+            raise ValueError("Feature extraction failed for local file!")
+
+        # Run prediction using the CNN model
+        prediction = model.predict(features)  
+        predicted_label = np.argmax(prediction)
+
+        # Map the prediction to an emotion
+        emotion_labels = ["Anger", "Frustration", "Happiness", "Neutral", "Sad"]
+        predicted_emotion = emotion_labels[predicted_label]
+
+        return render_template('prediction.html', filename=filename, emotion=predicted_emotion)
+
+    except Exception as e:
+        flash("Something went wrong! Please try again.", 'error')
+        print(f"Error processing local file prediction: {e}")
+        return redirect(url_for('choose'))
 
 
 @app.route('/predict/<filename>', methods=['GET'])
@@ -307,7 +371,7 @@ def predict_emotion(filename):
         print(f"Predicted Label Index: {predicted_label}")  # Print index
 
         # Map the prediction to an emotion
-        emotion_labels = ["Angry", "Fear", "Happy", "Neutral", "Sad", "Frustration", "Excitement"]
+        emotion_labels = ["Anger", "Frustration", "Happiness", "Neutral", "Sad"]
         predicted_emotion = emotion_labels[predicted_label]
         print(f"Predicted Emotion: {predicted_emotion}")  # Print emotion
 
@@ -330,5 +394,5 @@ def predict_emotion(filename):
 
 # Run the Flask app
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))  # Default to 8000 if PORT is not set
+    port = int(os.environ.get("PORT", 8000))
     app.run(host="0.0.0.0", port=port, debug=True)

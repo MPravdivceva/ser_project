@@ -181,7 +181,7 @@ footer {
 }
 
 .about-container {
-    max-width: 800px; /* Limit the width for better readability */
+    max-width: 1500px; /* Limit the width for better readability */
     margin: 0 auto; /* Center the container horizontally */
     padding: 20px; /* Add space inside the container */
     line-height: 1.6; /* Improve line spacing for better readability */
@@ -484,4 +484,100 @@ body.record #recording-indicator {
     color: red;
     margin-top: 20px;
     display: none;
+}
+
+/* Notebook-style container */
+.notebook-container {
+    width: 80%;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-left: 5px solid #007BFF;
+    background: #f9f9f9;
+    border-radius: 5px;
+}
+
+h2 {
+    color: #333;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.citation {
+    font-style: italic;
+    font-size: 14px;
+    color: #555;
+    background: #fff3cd;
+    padding: 10px;
+    border-left: 5px solid #ffcc00;
+    border-radius: 5px;
+}
+
+/* Centered box with dynamic background */
+.prediction-container {
+    text-align: center;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 1.5s ease-in-out;
+    width: 50%;  /* Set a width for better appearance */
+    max-width: 500px;  /* Prevents too large */
+    margin: 50px auto; /* Centering the box */
+    background-color: white; /* Default, will change dynamically */
+}
+
+/* Emotion text animation */
+.emotion-text {
+    font-size: 28px;
+    font-weight: bold;
+    opacity: 0;
+    animation: fadeInText 2s ease-in-out forwards;
+}
+
+/* Animation for appearing */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInText {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Emotion GIFs */
+.emotion-gif {
+    width: 150px;
+    height: 150px;
+    margin: 20px auto;
+}
+
+/* Try Again Button */
+.try-again {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+    color: white;
+    background-color: #007BFF;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.try-again:hover {
+    background-color: #0056b3;
 }

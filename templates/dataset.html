@@ -3,8 +3,65 @@
 {% block title %}About Project - SER{% endblock %}
 
 {% block content %}
-<div class="about-container">
-    <h2>About This Project</h2>
-    <p>This project uses advanced machine learning techniques to classify emotions from speech. By analyzing features like pitch and MFCCs, the system identifies emotions such as happiness, sadness, anger, and neutrality.</p>
+
+<div class="notebook-container">
+    <h1>Datasets</h1>
+    <div class="section">
+        <h2>Introduction</h2>
+        <p>The quality of a Speech Emotion Recognition (SER) system depends on the dataset it is trained on. A well-chosen dataset helps the model understand emotions accurately, making it more reliable in real-life situations.
+
+            A good dataset should include diverse voices, natural emotional expressions, and high-quality recordings. Some datasets use acted emotions, while others capture real-life speech. Both have advantages, but models trained only on acted data may struggle to recognize emotions in everyday conversations.
+            
+          
+            In practical applications, SER can be used in mental health support, smart assistants, and even car safety systems that detect driver fatigue. Choosing the right dataset ensures that these systems truly understand human emotions, making them more helpful and reliable in daily life.</p>
+    </div>
+    <!-- Section 1: Importance of Dataset Choice -->
+    <div class="section">
+        <h2>Choosing the Right Dataset</h2>
+        <p>
+            A well-chosen dataset is crucial for a Speech Emotion Recognition (SER) system to accurately interpret human emotions in real-world situations. 
+            Some datasets focus on acted emotions, where professional actors simulate different moods, while others capture spontaneous, real-world speech, 
+            which can be more challenging but also more authentic. 
+        </p>
+        <p>
+            By combining both types, an SER model can achieve better adaptability, improving applications like 
+            mental health support, customer interactions, and AI-driven assistants, making technology more intuitive and responsive.
+        </p>
+    </div>
+
+    <!-- Section 2: CREMA-D Dataset -->
+    <div class="section">
+        <h2>CREMA-D Dataset</h2>
+        <p>
+            The <b>CREMA-D (Crowd-Sourced Emotional Multimodal Actors Dataset)</b> contains <b>7,442 audio-visual recordings</b> from 
+            <b>91 professional actors (48 male, 43 female)</b>, covering six emotional categories: 
+            <i>Anger, Disgust, Fear, Happiness, Neutral, and Sadness</i>. 
+            Each sample is recorded with different emotional tones and is annotated through 
+            <b>crowd-sourced human evaluations</b>, making it a valuable resource for training multimodal emotion recognition models.
+        </p>
+        <img src="{{ url_for('static', filename='images/cremad.png') }}" alt="CREMA-D Dataset">
+    </div>
+
+    <!-- Section 3: IEMOCAP Dataset -->
+    <div class="section">
+        <h2>IEMOCAP Dataset</h2>
+        <p>
+            The <b>IEMOCAP (Interactive Emotional Dyadic Motion Capture Database)</b> consists of 
+            <b>approximately 12 hours of audio-visual recordings</b> from <b>10 professional actors (5 male, 5 female)</b>, 
+            engaging in both <b>scripted and spontaneous conversations</b>. 
+        </p>
+        <p>
+            It includes multiple emotion categories such as 
+            <i>Neutral, Happiness, Sadness, Anger, Surprise, Fear, and Frustration</i>. 
+            Each utterance is carefully labeled using a combination of <b>actor self-assessment and third-party annotations</b>, 
+            making it a widely used dataset for both speech and multimodal emotion recognition research.
+        </p>
+        <img src="{{ url_for('static', filename='images/iemocap.png') }}" alt="IEMOCAP Dataset">
+    </div>
+
+
+
 </div>
+
+
 {% endblock %}
