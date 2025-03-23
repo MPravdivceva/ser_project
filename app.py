@@ -212,10 +212,10 @@ def ml_model():
     return render_template('ml_model.html')
 
 # Record voice page
-
 @app.route('/record', methods=['GET', 'POST'])
 def record():
     if request.method == 'POST':
+        # Check if the form has a file
         if 'audio-file' not in request.files:
             flash('No file uploaded!', 'record-error')
             return redirect(request.url)
@@ -224,31 +224,17 @@ def record():
 
         if file and allowed_file(file.filename):
             original_filename = secure_filename(file.filename)
+
+            # Generate a unique filename (server-side)
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
             unique_filename = f"{timestamp}_{original_filename}"
 
             try:
-                # Save file temporarily
-                temp_path = f"temp_{unique_filename}"
-                file.save(temp_path)
-                print(f"Temporarily saved recording to: {temp_path}")
-
-                # Re-encode the file to clean WAV format
-                try:
-                    data, samplerate = sf.read(temp_path)
-                    sf.write(temp_path, data, samplerate)
-                    print(" Re-encoded audio file using SoundFile")
-                except Exception as e:
-                    print(f"Re-encoding failed: {e}")
-
-                # ⬆Upload re-encoded file to Azure Blob Storage
+                # Upload the file to Azure Blob Storage
                 blob_client = container_client.get_blob_client(blob=unique_filename)
-                with open(temp_path, "rb") as cleaned_file:
-                    blob_client.upload_blob(cleaned_file, overwrite=True)
+                blob_client.upload_blob(file, overwrite=True)
 
-                # Remove the temp file
-                os.remove(temp_path)
-
+                # After uploading, redirect to the prediction page
                 return redirect(url_for('predict_emotion', filename=unique_filename))
 
             except Exception as e:
@@ -384,6 +370,7 @@ def predict_emotion(filename):
 
         # Log file size
         print(f"Saved file: {temp_audio_path}, size: {os.path.getsize(temp_audio_path)} bytes")
+
 
         # Extract features from the audio
         features = extract_features(temp_audio_path)
