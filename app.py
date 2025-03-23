@@ -51,8 +51,12 @@ def extract_features(file_path):
         MAX_LEN = 130
 
         # Load the audio file
-        y, sr = librosa.load(file_path, sr=None)
-        print(f"Audio Loaded: y.shape={y.shape}, sr={sr}")
+        try:
+            y, sr = librosa.load(file_path, sr=None)
+            print(f"Loaded audio: y.shape={y.shape}, sr={sr}")
+        except Exception as e:
+            print(f"Librosa failed to load audio: {e}")
+            return None
 
         # Extract features (matching training process)
         mel_spectrogram = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=64)
@@ -86,6 +90,8 @@ def extract_features(file_path):
 
     except Exception as e:
         print(f"Error extracting features: {e}")
+        print(f"File exists: {os.path.exists(file_path)}")
+        print(f"File size: {os.path.getsize(file_path)} bytes")
         return None
 
 
@@ -353,9 +359,15 @@ def predict_emotion(filename):
         blob_client = container_client.get_blob_client(blob=filename)
         file_stream = io.BytesIO(blob_client.download_blob().readall())
 
+        # Reset pointer before reading
+        file_stream.seek(0)
+
         # Save the file temporarily
         with open(temp_audio_path, "wb") as f:
             f.write(file_stream.read())
+
+        # Log file size
+        print(f"Saved file: {temp_audio_path}, size: {os.path.getsize(temp_audio_path)} bytes")
 
         # Extract features from the audio
         features = extract_features(temp_audio_path)
