@@ -1,6 +1,5 @@
 from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, redirect, flash, url_for
-import os
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 import uuid
@@ -16,6 +15,9 @@ import joblib
 import pandas as pd
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+import os
+os.environ["PATH"] += os.pathsep + os.path.abspath("bin")
+
 
 
 # Load environment variables
@@ -368,6 +370,14 @@ def predict_emotion(filename):
 
         # Log file size
         print(f"Saved file: {temp_audio_path}, size: {os.path.getsize(temp_audio_path)} bytes")
+
+        try:
+            import soundfile as sf
+            data, samplerate = sf.read(temp_audio_path)
+            sf.write(temp_audio_path, data, samplerate)
+            print("Re-encoded audio file using Soundfile")
+        except Exception as e:
+            print(f"Re-encoding failed: {e}")
 
         # Extract features from the audio
         features = extract_features(temp_audio_path)
