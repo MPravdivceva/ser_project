@@ -1,0 +1,6 @@
+{
+    
+    "appService.defaultWebAppToDeploy": "/subscriptions/28a72a57-c92f-4c24-8a0d-56946fd4fbf0/resourceGroups/ser_project_group/providers/Microsoft.Web/sites/ser-project",
+    "appService.deploySubpath": "."
+    
+}

@@ -111,9 +111,10 @@ MODEL_BLOB_NAME = "model.keras"
 # Define local model path to avoid re-downloading
 MODEL_LOCAL_PATH = "model.keras"
 
-def load_model():
+def load_cnn_model():
     try:
         # Check if model is already downloaded
+        print("Checking if model file exists localy...")
         if os.path.exists(MODEL_LOCAL_PATH):
             print("Loading model from local storage...")
             return tf.keras.models.load_model(MODEL_LOCAL_PATH)
@@ -138,7 +139,7 @@ def load_model():
         return None
 
 # Load the model at startup
-model = load_model()
+model = load_cnn_model()
 
 
 # Flask application setup

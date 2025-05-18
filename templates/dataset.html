@@ -1,82 +1,132 @@
 {% extends 'base.html' %}
 
-{% block title %}About Project - SER{% endblock %}
+{% block title %}Dataset - SER{% endblock %}
 
 {% block content %}
 
 <div class="notebook-container">
-    <h1>Datasets</h1>
+    
     <div class="section">
-        <p>The quality of a Speech Emotion Recognition (SER) system depends on the dataset it is trained on. A well-chosen dataset helps the model understand emotions accurately, making it more reliable in real-life situations.
-
-            A good dataset should include diverse voices, natural emotional expressions, and high-quality recordings. Some datasets use acted emotions, while others capture real-life speech. Both have advantages, but models trained only on acted data may struggle to recognize emotions in everyday conversations.
+        <h2>Dataset</h2>
+        <p>The quality of a Speech Emotion Recognition (SER) system depends heavily on the dataset it is trained on. Emotions are 
+            complex and can vary significantly between speakers based on voice, age, gender, accent, and context. A diverse and 
+            well-structured dataset helps the model learn these subtle variations and improves its ability to recognize emotions 
+            in real-life situations. In this project, I selected two widely recognized datasets in the field of emotion recognition:
+             CREMA-D and IEMOCAP. These datasets were chosen because they complement each other in terms of emotion range, speaker 
+             diversity, and recording styles.<Br>
+            The CREMA-D dataset contains over 7,000 audio-visual recordings from 91 professional actors, covering a range of emotions 
+            such as anger, fear, happiness, sadness, and neutrality. Each recording is annotated through crowd-sourced evaluations, 
+            ensuring reliable emotion labels. On the other hand, the IEMOCAP dataset offers approximately 12 hours of both scripted 
+            and spontaneous conversations performed by 10 actors. It includes a wide set of emotional categories and features both 
+            acted and naturally expressed speech, making it especially valuable for building systems that need to work in dynamic,
+             real-world environments.<Br>
+            By combining these two datasets, the training set benefits from both the clarity and consistency of acted emotions and 
+            the realism of spontaneous speech. This hybrid approach enhances the model’s ability to generalize beyond training data, 
+            making it more useful in real-world applications such as virtual assistants, mental health tools, and emotion-aware user
+             interfaces.</p>
+        
+        <div class="diagram-row">
+            <div class="diagram-box">
             
-          
-            In practical applications, SER can be used in mental health support, smart assistants, and even car safety systems that detect driver fatigue. Choosing the right dataset ensures that these systems truly understand human emotions, making them more helpful and reliable in daily life.</p>
+                <img src="{{ url_for('static', filename='images/CombinedData.png') }}"
+                    alt="Diagram 1" class="smaller-img">
+            
+            </div>
+            <div class="diagram-box">
+                <img src="{{ url_for('static', filename='images/CombinedData2.png') }}"
+                    alt="Diagram 2">
+            
+            </div>
     </div>
-    <!-- Section 1: Importance of Dataset Choice -->
+        
+        <p>
+            The pie chart on the left represents the distribution of emotions in the combined dataset, showing the percentage of 
+            samples for each category. The largest portions belong to frustration (19%), neutral (18.3%), anger (16.5%), 
+            and sad (16.4%), which are relatively well balanced. However, emotions like happiness (12.5%), fear (9.0%), 
+            and disgust (8.3%) are clearly underrepresented.<Br>
+        
+            The bar chart on the right gives a more detailed view of how many audio samples exist for each emotion. 
+            This chart helps visualize the actual data volume behind the percentages and confirms that fear and disgust appear 
+            far less frequently compared to other emotions.<Br>
+        
+            To improve the balance of the dataset and avoid model bias toward the more frequent emotions, I will remove the fear and 
+            disgust categories entirely. Additionally, I will apply data augmentation techniques to the happiness samples to boost 
+            their count and help the model better recognize this emotion during prediction. This preprocessing step is important for 
+            building a model that can fairly and accurately recognize all intended emotional states.</p>
+    </div>
+
     <div class="section">
-        <h2>Choosing the Right Dataset</h2>
+        <h2>Data Augmentation</h2>
         <p>
-            A well-chosen dataset is crucial for a Speech Emotion Recognition (SER) system to accurately interpret human emotions in real-world situations. 
-            Some datasets focus on acted emotions, where professional actors simulate different moods, while others capture spontaneous, real-world speech, 
-            which can be more challenging but also more authentic. 
+            Data augmentation is a technique used to increase the amount and diversity of training data by applying small, 
+            controlled modifications to existing samples. In the context of speech emotion recognition, this helps the model 
+            become more robust and better at generalizing across different voices, speaking styles, and recording 
+            conditions — without requiring the collection of new data.<Br>
+        
+            This process is particularly useful when working with imbalanced datasets, where some emotions (such as happiness) 
+            are underrepresented. By augmenting these minority classes, we can help the model learn to recognize them more reliably.
+            Below are examples of different augmentation methods applied to the same audio sample:
         </p>
+        <img src="{{ url_for('static', filename='images/OriginalWaveform.png') }}" alt="Original Waveform">
         <p>
-            By combining both types, an SER model can achieve better adaptability, improving applications like 
-            mental health support, customer interactions, and AI-driven assistants, making technology more intuitive and responsive.
+            <strong>Original Waveform:</strong> This waveform represents the unaltered audio recording. It reflects the speaker’s 
+            natural expression of emotion and serves as the baseline for comparison with the augmented versions.
+        </p>
+        <img src="{{ url_for('static', filename='images/TimeStretchedWaveform.png') }}" alt="Time-Stretched Waveform">
+        <p>
+            <strong>Time-Stretched (1.2x Faster):</strong> In this version, the audio is played 20% faster than the original. 
+            Time-stretching changes the speed of the speech while preserving its pitch. This simulates natural variation in 
+            speech rate and helps the model handle faster speakers without losing the emotional content.
+        </p>
+        <img src="{{ url_for('static', filename='images/PitchShifted.png') }}" alt="Pitch-Shifted Waveform">
+        <p>
+            <strong>Pitch-Shifted (+2 Semitones):</strong> Here, the pitch of the speaker’s voice is increased by two semitones, 
+            making it sound slightly higher. This type of augmentation mimics the diversity in vocal range found across speakers 
+            (e.g., differences in age, gender, or tone), allowing the model to learn that the same emotion can be expressed in different 
+            vocal characteristics.
+        </p>
+        <img src="{{ url_for('static', filename='images/AddedNoise.png') }}" alt="Waveform with Added Noise">
+        <p>
+            <strong>Noise Added:</strong> A small amount of background noise is added to simulate real-world acoustic environments, 
+            such as ambient sounds or microphone interference. This improves the model’s ability to function in less-than-ideal 
+            recording conditions, which are common in real-life applications.
         </p>
     </div>
-
-    <!-- Section 2: CREMA-D Dataset -->
+    
     <div class="section">
-        <h2>CREMA-D Dataset</h2>
-        <p>
-            The <b>CREMA-D (Crowd-Sourced Emotional Multimodal Actors Dataset)</b> contains <b>7,442 audio-visual recordings</b> from 
-            <b>91 professional actors (48 male, 43 female)</b>, covering six emotional categories: 
-            <i>Anger, Disgust, Fear, Happiness, Neutral, and Sadness</i>. 
-            Each sample is recorded with different emotional tones and is annotated through 
-            <b>crowd-sourced human evaluations</b>, making it a valuable resource for training multimodal emotion recognition models.
+        <h2>Final Dataset</h2>
+        <p>To address class imbalance and help the model learn underrepresented emotions more effectively, I applied data 
+            augmentation techniques to the happiness category. These included speeding up audio, pitch shifting, and adding 
+            background noise — all while preserving the emotional content of the original speech. This process created a greater 
+            variety of samples, giving the model more examples to learn from.
         </p>
-        <img src="{{ url_for('static', filename='images/cremad.png') }}" alt="CREMA-D Dataset">
+            
+        
+        <div class="diagram-row">
+            <div class="diagram-box">
+                <!--Add a class to control size -->
+                <img src="{{ url_for('static', filename='images/FinalDataset2.png') }}"
+                     alt="Diagram 1" class="smaller-img">
+                
+            </div>
+            <div class="diagram-box">
+                <img src="{{ url_for('static', filename='images/AugmentedData.png') }}"
+                     alt="Diagram 2">
+                
+            </div>
+        </div>
+        <p>
+            The bar chart shows the updated emotion distribution, where all emotions are now more evenly represented. 
+            Frustration and neutral still have slightly more samples, but now happiness, sad, and anger are closely aligned in 
+            terms of quantity — reducing the risk of model bias toward any single emotion. The pie chart confirms this balance visually, with each emotion occupying a similar portion of the dataset. The overall 
+            distribution is now far more consistent than before augmentation.  
+        </p>
+         
     </div>
-
-    <!-- Section 3: IEMOCAP Dataset -->
-    <div class="section">
-        <h2>IEMOCAP Dataset</h2>
-        <p>
-            The <b>IEMOCAP (Interactive Emotional Dyadic Motion Capture Database)</b> consists of 
-            <b>approximately 12 hours of audio-visual recordings</b> from <b>10 professional actors (5 male, 5 female)</b>, 
-            engaging in both <b>scripted and spontaneous conversations</b>. 
-        </p>
-        <p>
-            It includes multiple emotion categories such as 
-            <i>Neutral, Happiness, Sadness, Anger, Surprise, Fear, and Frustration</i>. 
-            Each utterance is carefully labeled using a combination of <b>actor self-assessment and third-party annotations</b>, 
-            making it a widely used dataset for both speech and multimodal emotion recognition research.
-        </p>
-        <img src="{{ url_for('static', filename='images/iemocap.png') }}" alt="IEMOCAP Dataset">
-    </div>
-      <!-- Section 3: IEMOCAP Dataset -->
-      <div class="section">
-        <h2>IEMOCAP Dataset</h2>
-        <p>
-            The <b>IEMOCAP (Interactive Emotional Dyadic Motion Capture Database)</b> consists of 
-            <b>approximately 12 hours of audio-visual recordings</b> from <b>10 professional actors (5 male, 5 female)</b>, 
-            engaging in both <b>scripted and spontaneous conversations</b>. 
-        </p>
-        <p>
-            It includes multiple emotion categories such as 
-            <i>Neutral, Happiness, Sadness, Anger, Surprise, Fear, and Frustration</i>. 
-            Each utterance is carefully labeled using a combination of <b>actor self-assessment and third-party annotations</b>, 
-            making it a widely used dataset for both speech and multimodal emotion recognition research.
-        </p>
-        <img src="{{ url_for('static', filename='images/iemocap.png') }}" alt="IEMOCAP Dataset">
-    </div>
-
-
-
+    
+        
 </div>
+
 
 
 {% endblock %}
